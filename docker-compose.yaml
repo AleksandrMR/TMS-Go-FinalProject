@@ -1,0 +1,23 @@
+version: '3.8'
+
+# Define services
+services:
+
+  # Hash Service
+  hash_service:
+    build: ./
+    ports:
+      - "50051:50051"
+    environment:
+      GRPC_ADDR: "0.0.0.0:50051"
+
+  # Gateway Service
+  gateway_service:
+    build: github.com/AleksandrMR/gateway_hashService/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - hash_service
+    environment:
+      GRPC_ADDR: "hash_service:8080"
+      HTTP_ADDR: "0.0.0.0:8080"

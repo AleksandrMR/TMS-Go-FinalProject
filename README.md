@@ -22,3 +22,17 @@ Implement a system with two microservices:
 - CreateHash: Creates and stores a hash for a new payload.
 - Communication: The Gateway Service communicates with the Hashing Service using gRPC.
 - Testing: The solution should be thoroughly tested, including unit tests and integration tests to cover the logic and communication between services.
+
+---
+**NOTE**
+
+Below is a repository of elements of this project.  
+This was done for more approximate conditions of microservice architecture.
+
+proto_hashService:  
+https://github.com/AleksandrMR/proto_hashService
+
+gateway_hashService:  
+https://github.com/AleksandrMR/gateway_hashService
+
+---

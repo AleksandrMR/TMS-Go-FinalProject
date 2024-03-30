@@ -6,12 +6,19 @@ import (
 	grps "google.golang.org/grpc"
 )
 
-type serverAPI struct {
-	desc.UnsafeHashServiceServer
+type HashService interface {
+	CheckHash(payload string) (bool error)
+	GetHash(payload string) (string error)
+	CreateHash(payload string) (bool error)
 }
 
-func Register(gRPS *grps.Server) {
-	desc.RegisterHashServiceServer(gRPS, &serverAPI{})
+type serverAPI struct {
+	desc.UnsafeHashServiceServer
+	hashService HashService
+}
+
+func Register(gRPS *grps.Server, hashService HashService) {
+	desc.RegisterHashServiceServer(gRPS, &serverAPI{hashService: hashService})
 }
 
 // CheckHash endpoint "/hashService/v1/checkHash"

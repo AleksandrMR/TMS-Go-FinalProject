@@ -12,7 +12,7 @@ RUN go mod download
 COPY . .
 
 # Build the Go application
-RUN CGO_ENABLED=0 GOOS=linux go build -o hashServer ./cmd/hashService
+RUN CGO_ENABLED=0 GOOS=linux go build -o hashService ./cmd/hashService
 
 # Stage 2: Final stage
 FROM alpine:edge
@@ -21,10 +21,13 @@ FROM alpine:edge
 WORKDIR /app
 
 # Copy the binary from the build stage
-COPY --from=build /app/hashServer .
+COPY --from=build /app/hashService .
 
 # Set the timezone and install CA certificates
 RUN apk --no-cache add ca-certificates tzdata
 
 # Set the entrypoint command
-ENTRYPOINT ["/app/hashServer"]
+ENTRYPOINT ["/app/hashService"]
+
+# Command to run the executable
+CMD ["./hashService"]

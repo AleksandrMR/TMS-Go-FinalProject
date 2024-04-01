@@ -10,6 +10,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var (
+	ErrHashExists        = "hash already exists"
+	ErrHashNotFound      = "hash not found"
+	ErrPayloadIsRequired = "payload is required"
+	ErrInternal          = "internal error"
+)
+
 // HashService interface for implementing business logic in the service layer
 type HashService interface {
 	CheckHash(ctx context.Context, payload string) (bool, error)
@@ -44,7 +51,7 @@ func (s *serverAPI) CheckHash(
 				HashExist: exist,
 			}, nil
 		}
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, ErrInternal)
 	}
 
 	return &desc.CheckHashResponse{
@@ -64,9 +71,9 @@ func (s *serverAPI) GetHash(
 	if err != nil {
 		// TODO: handle specific error cases
 		if errors.Is(err, storage.ErrHashNotFound) {
-			return nil, status.Error(codes.NotFound, "hash not found")
+			return nil, status.Error(codes.NotFound, ErrHashNotFound)
 		}
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Error(codes.Internal, ErrInternal)
 	}
 
 	return &desc.GetHashResponse{
@@ -85,7 +92,10 @@ func (s *serverAPI) CreateHash(
 	isCreated, err := s.hashService.CreateHash(ctx, request.GetPayload())
 	if err != nil {
 		// TODO: handle specific error cases
-		return nil, status.Error(codes.Internal, "internal error")
+		if errors.Is(err, storage.ErrHashExists) {
+			return nil, status.Error(codes.AlreadyExists, ErrHashExists)
+		}
+		return nil, status.Error(codes.Internal, ErrInternal)
 	}
 
 	return &desc.CreateHashResponse{
@@ -97,21 +107,21 @@ func (s *serverAPI) CreateHash(
 
 func validateCheckHash(req *desc.CheckHashRequest) error {
 	if req.GetPayload() == "" {
-		return status.Error(codes.InvalidArgument, "payload is required")
+		return status.Error(codes.InvalidArgument, ErrPayloadIsRequired)
 	}
 	return nil
 }
 
 func validateGetHash(req *desc.GetHashRequest) error {
 	if req.GetPayload() == "" {
-		return status.Error(codes.InvalidArgument, "payload is required")
+		return status.Error(codes.InvalidArgument, ErrPayloadIsRequired)
 	}
 	return nil
 }
 
 func validateCreateHash(req *desc.CreateHashRequest) error {
 	if req.GetPayload() == "" {
-		return status.Error(codes.InvalidArgument, "payload is required")
+		return status.Error(codes.InvalidArgument, ErrPayloadIsRequired)
 	}
 	return nil
 }

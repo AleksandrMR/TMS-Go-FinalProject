@@ -83,6 +83,8 @@ func (s *Storage) SaveHashDB(
 	return id, nil
 }
 
+// ---------------- Private Functions ----------------------------------
+
 func (s *Storage) getHashFromDB(
 	ctx context.Context,
 	hash string,

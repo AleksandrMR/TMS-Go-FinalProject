@@ -9,11 +9,6 @@ import (
 	"log/slog"
 )
 
-var (
-	ErrHashExists   = "hash already exists"
-	ErrHashNotFound = "hash not found"
-)
-
 const (
 	emptyValue = 0
 )
@@ -59,7 +54,6 @@ func (s *HashService) CheckHash(
 	if err != nil {
 		return false, fmt.Errorf("%s: %w", op, err)
 	}
-	log.Info("checked if hash is exist", slog.Bool("is_exist", exist))
 	return exist, nil
 }
 
